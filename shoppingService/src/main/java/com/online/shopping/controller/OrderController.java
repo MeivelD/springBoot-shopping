@@ -20,7 +20,7 @@ import com.online.shopping.service.OrderService;
 
 @CrossOrigin(origins = "http://localhost:4200")
 @RestController
-@RequestMapping("/api/")
+@RequestMapping("/api/orders/")
 public class OrderController {
 
 	private OrderService orderService;
@@ -30,8 +30,14 @@ public class OrderController {
 		this.orderService = orderService;
 	}
 
-	@GetMapping("orders")
-	public ResponseEntity<List<Order>> getAllOrder() {
+	/**
+	 * Fetch all the orders placed.
+	 * 
+	 * @return list of order placed.
+	 * @throws Exception
+	 */
+	@GetMapping()
+	public ResponseEntity<List<Order>> getAllOrder() throws Exception{
 		try {
 			List<Order> orders = orderService.findAll();
 			return new ResponseEntity<>(orders, HttpStatus.OK);
@@ -40,39 +46,50 @@ public class OrderController {
 		}
 	}
 
+	/**
+	 * Fetch specific order placed.
+	 * 
+	 * @param orderId id of the order
+	 * @return specific order
+	 * @throws Exception
+	 */
 	@GetMapping("{orderId}")
 	public ResponseEntity<Order> getOrder(@PathVariable int orderId) throws Exception {
-		try {
-			Order order = orderService.findById(orderId);
-			if (order == null) {
-				throw new RuntimeException("Order id not found - " + orderId);
-			}
-			return new ResponseEntity<>(order, HttpStatus.OK);
-		} catch (Exception e) {
-			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-//			return new ResponseEntity<>().status(HttpStatus.FORBIDDEN)
-//            .body("Error Message");
-		}
-	}
-
-	@PutMapping()
-	public Order updateOrder(@RequestBody Order order) throws Exception {
-		orderService.save(order);
-		return order;
-	}
-
-	@DeleteMapping("{orderId}")
-	public String deleteOrder(@PathVariable int orderId) throws Exception {
-
 		Order order = orderService.findById(orderId);
+		if (order == null) {
+			throw new RuntimeException("Order id not found - " + orderId);
+		}
+		return new ResponseEntity<>(order, HttpStatus.OK);
+	}
 
+	/**
+	 * Update specific order placed.
+	 * 
+	 * @param order order details needs to be updated
+	 * @return status of the update.
+	 * @throws Exception
+	 */
+	@PutMapping()
+	public ResponseEntity<String> updateOrder(@RequestBody Order order) throws Exception {
+		orderService.save(order);
+		return new ResponseEntity<>("Updated UserInfo id - " + order.getOrderId(), HttpStatus.OK);
+	}
+	
+	/**
+	 * Delete the order placed.
+	 * 
+	 * @param orderId
+	 * @return status of the deleted.
+	 * @throws Exception
+	 */
+	@DeleteMapping("{orderId}")
+	public ResponseEntity<String> deleteOrder(@PathVariable int orderId) throws Exception {
+		Order order = orderService.findById(orderId);
 		if (order == null) {
 			throw new RuntimeException("UserInfo id not found - " + orderId);
 		}
-
 		orderService.deleteById(orderId);
-
-		return "Deleted UserInfo id - " + orderId;
+		return new ResponseEntity<>("Deleted UserInfo id - " + orderId, HttpStatus.OK);
 	}
 
 }
