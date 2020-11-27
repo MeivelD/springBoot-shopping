@@ -1,7 +1,6 @@
 package com.online.shopping.controller;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -37,13 +36,9 @@ public class OrderController {
 	 * @throws Exception
 	 */
 	@GetMapping()
-	public ResponseEntity<List<Order>> getAllOrder() throws Exception{
-		try {
-			List<Order> orders = orderService.findAll();
-			return new ResponseEntity<>(orders, HttpStatus.OK);
-		} catch (NoSuchElementException e) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
+	public ResponseEntity<List<Order>> getAllOrder() throws Exception {
+		List<Order> orders = orderService.findAll();
+		return new ResponseEntity<>(orders, HttpStatus.OK);
 	}
 
 	/**
@@ -57,7 +52,7 @@ public class OrderController {
 	public ResponseEntity<Order> getOrder(@PathVariable int orderId) throws Exception {
 		Order order = orderService.findById(orderId);
 		if (order == null) {
-			throw new RuntimeException("Order id not found - " + orderId);
+			throw new RuntimeException("Order not found - " + orderId);
 		}
 		return new ResponseEntity<>(order, HttpStatus.OK);
 	}
@@ -72,9 +67,9 @@ public class OrderController {
 	@PutMapping()
 	public ResponseEntity<String> updateOrder(@RequestBody Order order) throws Exception {
 		orderService.save(order);
-		return new ResponseEntity<>("Updated UserInfo id - " + order.getOrderId(), HttpStatus.OK);
+		return new ResponseEntity<>("Updated Order Successfully - " + order.getOrderId(), HttpStatus.OK);
 	}
-	
+
 	/**
 	 * Delete the order placed.
 	 * 
@@ -86,10 +81,10 @@ public class OrderController {
 	public ResponseEntity<String> deleteOrder(@PathVariable int orderId) throws Exception {
 		Order order = orderService.findById(orderId);
 		if (order == null) {
-			throw new RuntimeException("UserInfo id not found - " + orderId);
+			throw new RuntimeException("Order not found - " + orderId);
 		}
 		orderService.deleteById(orderId);
-		return new ResponseEntity<>("Deleted UserInfo id - " + orderId, HttpStatus.OK);
+		return new ResponseEntity<>("Deleted Order Successfully - " + orderId, HttpStatus.OK);
 	}
 
 }
